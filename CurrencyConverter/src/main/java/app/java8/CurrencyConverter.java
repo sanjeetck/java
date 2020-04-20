@@ -39,8 +39,7 @@ public class CurrencyConverter {
 						.collect( Collectors.groupingBy(Transaction::getCountryOrCity, 
 								Collectors.groupingBy(Transaction::getCreditRating,     //)));				
 										Collectors.mapping(Transaction::getResultCurrencyAmount, 
-												Collectors.averagingDouble(BigDecimal::doubleValue)))));
-												//Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)))));												
+												Collectors.averagingDouble(BigDecimal::doubleValue)))));																							
 
 		return mappedByCountryNRating;
 	}
