@@ -24,8 +24,8 @@ public class CurrencyConverter {
 		return stream;
 	}
 
-	public Map<String, Map<String, BigDecimal>> calculate(Stream<Transaction> transactionStream, Currency baseCurrency, Currency resultCurrency) {
-		 Map<String, Map<String, BigDecimal>> mappedByCountryNRating =
+	public Map<String, Map<String, Double>> calculateAvg(Stream<Transaction> transactionStream, Currency baseCurrency, Currency resultCurrency) {
+		 Map<String, Map<String, Double>> mappedByCountryNRating =
 				transactionStream
 						.filter(transaction -> !transaction.getCreditRating().isEmpty())
 						.map(transaction -> {  
@@ -39,17 +39,39 @@ public class CurrencyConverter {
 						.collect( Collectors.groupingBy(Transaction::getCountryOrCity, 
 								Collectors.groupingBy(Transaction::getCreditRating,     //)));				
 										Collectors.mapping(Transaction::getResultCurrencyAmount, 
+												Collectors.averagingDouble(BigDecimal::doubleValue)))));
+												//Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)))));												
+
+		return mappedByCountryNRating;
+	}
+	
+	public Map<String, Map<String, BigDecimal>> calculateTotal(Stream<Transaction> transactionStream, Currency baseCurrency, Currency resultCurrency) {
+		 Map<String, Map<String, BigDecimal>> mappedByCountryNRating =
+				transactionStream
+						.filter(transaction -> !transaction.getCreditRating().isEmpty())
+						.map(transaction -> {  
+								// Calculate the transaction in USD
+								calculateInBaseCurrency(transaction);
+										
+								// Get the transaction in result currency 
+								calculateInResultCurrency(resultCurrency, transaction);
+								return transaction;
+						})
+						.collect( Collectors.groupingBy(Transaction::getCountryOrCity, 
+								Collectors.groupingBy(Transaction::getCreditRating,     			
+										Collectors.mapping(Transaction::getResultCurrencyAmount, 												
 												Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)))));												
 
 		return mappedByCountryNRating;
 	}
 	
-	public void printResults(Map<String, Map<String, BigDecimal>> mappedByCountryNRating) {
+	public <T extends Number> void printResults(Map<String, Map<String, T>> mappedByCountryNRating, Currency currency) {
 		
 		mappedByCountryNRating.forEach( 
 	 			(key,map) -> { System.out.println("Country: " + key + " CreditRatings: " + map.keySet() );	 					
 	 							map.keySet().forEach( (key2) -> {	 									
-	 								System.out.println(" for CreditRating: " + key2 + " Total Value (in EUR): " + df2.format(map.get(key2)));
+	 								System.out.println(" for CreditRating: " + key2 
+	 										+ " Value (in "+ currency + "): " + df2.format(map.get(key2)));
 	 							});
 	 					});
 	}

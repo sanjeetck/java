@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Currency;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -17,7 +18,8 @@ import app.java8.util.CurrencyUtil;
 
 public class CurrencyConverterTest {
 	CurrencyConverter currConverter; 
-		
+	private static DecimalFormat df2 = new DecimalFormat("#.####");
+	
 	@Before
 	public void setUp() throws Exception {
 		// Check if App exists
@@ -57,34 +59,22 @@ public class CurrencyConverterTest {
 		assertEquals(19, transactionStream.count());		
 	}
 	
-	
-	/*
-	 * @Test public void testCurrencyConversion() throws IOException {
-	 * Stream<String> stream = currConverter.getDataStream(); Currency baseCurrency
-	 * = Currency.getInstance("USD"); Currency finalCurrency =
-	 * Currency.getInstance("EUR"); Stream<Transaction> transactionStream =
-	 * Transaction.getTransactionStream(stream);
-	 * currConverter.calculate(transactionStream, baseCurrency, finalCurrency);
-	 * 
-	 * 
-	 * assertEquals(10145709240540253390.4016,
-	 * transactionStream.skip(1).findFirst().get().getCalculatedAmount(), 0.1); }
-	 */
-
 	@Test
 	public void testBasicCurrencyConversionUSD() {
 		Currency transactionCurrency = Currency.getInstance("GBP");		
 		BigDecimal transactionAmount = new BigDecimal(456.85014);		
-		assertEquals(new BigDecimal(755.6301).setScale(2, BigDecimal.ROUND_DOWN), 
-				transactionAmount.multiply(CurrencyUtil.getUSDExchangeRatesMap().get(transactionCurrency)).setScale(2, BigDecimal.ROUND_DOWN));		
+		assertEquals(df2.format(BigDecimal.valueOf(755.6301).doubleValue()), 
+				df2.format(transactionAmount.multiply(
+						CurrencyUtil.getUSDExchangeRatesMap().get(transactionCurrency)).doubleValue()));		
 	}
 	
 	@Test
 	public void testBasicCurrencyConversionEUR() {
 		Currency transactionCurrency = Currency.getInstance("EUR");		
-		BigDecimal transactionAmountUSD = new BigDecimal(755.6301);		
-		assertEquals(new BigDecimal(559.6952).setScale(2, BigDecimal.ROUND_DOWN), 
-				transactionAmountUSD.multiply(CurrencyUtil.getNonUSDExchangeRatesMap().get(transactionCurrency)).setScale(2, BigDecimal.ROUND_DOWN));		
+		BigDecimal transactionAmountUSD = BigDecimal.valueOf(755.6301);		
+		assertEquals(df2.format(BigDecimal.valueOf(559.6952).doubleValue()), 
+				df2.format(transactionAmountUSD.multiply(
+						CurrencyUtil.getNonUSDExchangeRatesMap().get(transactionCurrency)).doubleValue()));		
 	}
 	
 	@Test 
@@ -95,12 +85,44 @@ public class CurrencyConverterTest {
 		Stream<String> stream = currConverter.getDataStream(); 
 		Stream<Transaction> transactionStream = Transaction.getTransactionStream(stream); 
 		
-		Map<String, Map<String, BigDecimal>> mappedByCountryNRating =
-				currConverter.calculate(transactionStream, baseCurrency, finalCurrency); 
+		Map<String, Map<String, Double>> mappedByCountryNRating =
+				currConverter.calculateAvg(transactionStream, baseCurrency, finalCurrency); 
 		
-		currConverter.printResults(mappedByCountryNRating);
-		assertEquals(new BigDecimal(559.6952).setScale(2, BigDecimal.ROUND_DOWN),
-					mappedByCountryNRating.get("London").get("A").setScale(2, BigDecimal.ROUND_DOWN));
+		currConverter.printResults(mappedByCountryNRating, finalCurrency);
+		assertEquals(df2.format((BigDecimal.valueOf(559.6952).doubleValue())),
+					df2.format(mappedByCountryNRating.get("London").get("A")));
+	}
+	
+	@Test 
+	public void testMultiTransactionAvergeByCountryAndRating() throws IOException {
+		Currency baseCurrency = Currency.getInstance("USD"); 
+		Currency finalCurrency = Currency.getInstance("EUR"); 
+		
+		Stream<String> stream = currConverter.getDataStream(); 
+		Stream<Transaction> transactionStream = Transaction.getTransactionStream(stream); 
+		
+		Map<String, Map<String, Double>> mappedByCountryNRating =
+				currConverter.calculateAvg(transactionStream, baseCurrency, finalCurrency); 
+		
+		currConverter.printResults(mappedByCountryNRating, finalCurrency);
+		assertEquals(df2.format((BigDecimal.valueOf(885647944.1227).doubleValue())),
+				df2.format(mappedByCountryNRating.get("NOR").get("A")));
+	}
+	
+	@Test 
+	public void testMultiTransactionTotalByCountryAndRating() throws IOException {
+		Currency baseCurrency = Currency.getInstance("USD"); 
+		Currency finalCurrency = Currency.getInstance("EUR"); 
+		
+		Stream<String> stream = currConverter.getDataStream(); 
+		Stream<Transaction> transactionStream = Transaction.getTransactionStream(stream); 
+		
+		Map<String, Map<String, BigDecimal>> mappedByCountryNRating =
+				currConverter.calculateTotal(transactionStream, baseCurrency, finalCurrency); 
+		
+		currConverter.printResults(mappedByCountryNRating, finalCurrency);
+		assertEquals(df2.format(BigDecimal.valueOf(1771295888.2455).doubleValue()),
+					df2.format(mappedByCountryNRating.get("NOR").get("A")));
 	}
 	 
 

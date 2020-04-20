@@ -9,9 +9,9 @@ public class CurrencyUtil {
 
 	private final static Map<Currency, BigDecimal>  usdExchangeRatesMap = new HashMap<>();
 	static { 
-		usdExchangeRatesMap.put(Currency.getInstance("GBP"), new BigDecimal(1.654));
-		usdExchangeRatesMap.put(Currency.getInstance("CHF"), new BigDecimal(1.10));
-		usdExchangeRatesMap.put(Currency.getInstance("EUR"), new BigDecimal(1.35));
+		usdExchangeRatesMap.put(Currency.getInstance("GBP"), BigDecimal.valueOf(1.654));
+		usdExchangeRatesMap.put(Currency.getInstance("CHF"), BigDecimal.valueOf(1.10));
+		usdExchangeRatesMap.put(Currency.getInstance("EUR"), BigDecimal.valueOf(1.35));
 	}
 	
 	public static Map<Currency, BigDecimal> getUSDExchangeRatesMap() {
@@ -20,9 +20,9 @@ public class CurrencyUtil {
 
 	private final static Map<Currency, BigDecimal>  nonUSDExchangeRatesMap = new HashMap<>();
 	static { 
-		nonUSDExchangeRatesMap.put(Currency.getInstance("GBP"), new BigDecimal(0.6045));
-		nonUSDExchangeRatesMap.put(Currency.getInstance("CHF"), new BigDecimal(0.9090));
-		nonUSDExchangeRatesMap.put(Currency.getInstance("EUR"), new BigDecimal(0.7407));
+		nonUSDExchangeRatesMap.put(Currency.getInstance("GBP"), BigDecimal.valueOf(0.6045));
+		nonUSDExchangeRatesMap.put(Currency.getInstance("CHF"), BigDecimal.valueOf(0.9090));
+		nonUSDExchangeRatesMap.put(Currency.getInstance("EUR"), BigDecimal.valueOf(0.7407));
 	}
 	
 	public static Map<Currency, BigDecimal> getNonUSDExchangeRatesMap() {

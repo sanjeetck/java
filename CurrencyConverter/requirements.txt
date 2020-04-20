@@ -1,7 +1,8 @@
 Question:
  
 Given the supplied tab delimited input file (src/test/resources/FILE.DAT), 
-write a Java program that loads the data and determines the average amount in Euros (EUR), grouped by Country and Credit Rating.
+write a Java program that loads the data and determines the average or Total amount in Euros (EUR), grouped by 
+Country and Credit Rating.
  
 If a country is not available, the city should be used instead.
  
