@@ -44,7 +44,7 @@ public class Transaction {
 	}
 	
 	public String getCountryOrCity() {
-		if (getCountry().isBlank()) {
+		if (getCountry().isEmpty()) {
 			return getCity();
 		}
 		return getCountry();
