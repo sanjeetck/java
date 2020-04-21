@@ -1,0 +1,19 @@
+Write a program where there are 10 Producer threads & 10 consumer threads.
+
+Producer thread put data in an Array of size 10 & can only insert data if Array is not already full.
+Consumer thread take data from this array in FIFO format & delete that data from array so that no other thread can take what they had read.
+
+If Producer wants to insert data & Array is full it should block.
+If Consumer wants to pick data & Array in empty that should block.
+
+As the data becomes available blocked consumers should start working. 
+As new blank cell is available in Array blocked Producers should start putting data. 
+
+After picking data from Array a Consumer should sleep for some random time < 5 sec.
+After inserting data into Array Producer should sleep for some random time < 5 sec.
+
+Test this collection with two scenarios 
+1	Producers are two times faster than consumers.
+2	Consumers are two times faster than Producer.
+
+Pl. do not use any collection from java.util.concurrent package.
