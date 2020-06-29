@@ -17,7 +17,7 @@ public class CurrencyConverter {
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.####");
 	private final static BigDecimal CONSTANT_ONE = new BigDecimal(1);
-	Stream<String> stream;
+	private Stream<String> stream;
 	
 	public Stream<String> getDataStream() throws IOException {
 		stream = Files.lines(Paths.get("src\\test\\resources\\FILE.DAT")) ;
@@ -37,7 +37,7 @@ public class CurrencyConverter {
 								return transaction;
 						})
 						.collect( Collectors.groupingBy(Transaction::getCountryOrCity, 
-								Collectors.groupingBy(Transaction::getCreditRating,     //)));				
+								Collectors.groupingBy(Transaction::getCreditRating,     		
 										Collectors.mapping(Transaction::getResultCurrencyAmount, 
 												Collectors.averagingDouble(BigDecimal::doubleValue)))));																							
 
